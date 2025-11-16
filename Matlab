@@ -1,1 +1,51 @@
+% Time vector (0 to 600 seconds, 1 second step)
+time = 0:1:600;
+
+% Parameters
+avg_laser_power = 50e-3; % 50 mW
+fluctuation_percent = 0.10;
+absorption_efficiency = 0.6;
+conversion_efficiency = 0.25;
+
+% Simulate fluctuating laser power around 50 mW
+laser_power_input = avg_laser_power * (1 + fluctuation_percent * (2*rand(size(time)) - 1));
+
+% Power calculations
+power_absorbed = laser_power_input * absorption_efficiency;
+power_utilized = power_absorbed * conversion_efficiency;
+
+% Cumulative energy = integral of power over time (approx. by sum)
+energy_input = cumtrapz(time, laser_power_input);      % in Joules
+energy_absorbed = cumtrapz(time, power_absorbed);
+energy_utilized = cumtrapz(time, power_utilized);
+
+% Convert energy to mJ for easier viewing
+energy_input_mJ = energy_input * 1000;
+energy_absorbed_mJ = energy_absorbed * 1000;
+energy_utilized_mJ = energy_utilized * 1000;
+
+% Plot power vs time
+figure;
+subplot(2,1,1);
+plot(time, laser_power_input*1000, 'k--', 'DisplayName', 'Laser Power Input (mW)');
+hold on;
+plot(time, power_absorbed*1000, 'b', 'DisplayName', 'Power Absorbed (mW)');
+plot(time, power_utilized*1000, 'r-.', 'DisplayName', 'Power Utilized (mW)');
+xlabel('Time (s)');
+ylabel('Power (mW)');
+title('Power vs Time');
+legend();
+grid on;
+
+% Plot cumulative energy vs time
+subplot(2,1,2);
+plot(time, energy_input_mJ, 'k--', 'DisplayName', 'Input Energy (mJ)');
+hold on;
+plot(time, energy_absorbed_mJ, 'b', 'DisplayName', 'Absorbed Energy (mJ)');
+plot(time, energy_utilized_mJ, 'r-.', 'DisplayName', 'Utilized Energy (mJ)');
+xlabel('Time (s)');
+ylabel('Energy (mJ)');
+title('Cumulative Energy vs Time');
+legend();
+grid on;
 
